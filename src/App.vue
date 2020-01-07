@@ -14,7 +14,7 @@
     </table>
     <div class="action-buttons">
       <button @click="downloadCSV">Download CSV</button>
-      <button>Download PDF</button>
+      <button @click="downloadPDF">Download PDF</button>
     </div>
   </div>
 </template>
@@ -22,6 +22,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { unparse } from 'papaparse';
+
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+import { autoTable as AutoTable } from 'jspdf-autotable';
 
 import { Field, TableRecord } from '@/app.model';
 
@@ -61,6 +66,16 @@ export default class App extends Vue {
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
+  }
+  downloadPDF() {
+    const doc = new jsPDF();
+
+    ((doc as any).autoTable as AutoTable)({
+      head: [this.fields],
+      body: this.records
+    });
+
+    doc.save('data.pdf');
   }
 }
 </script>
